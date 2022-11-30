@@ -2,12 +2,11 @@
 Game entry point
 """
 
-# 3rd party and standard libraries
 import pygame as pg
 import sys
 
-# Internal libraries
 from settings import *
+from map import *
 
 
 class Game:
@@ -19,7 +18,7 @@ class Game:
         self.new_game()
 
     def new_game(self):
-        pass
+        self.map = Map(self)
 
     def game_loop(self):
         while True:
@@ -32,16 +31,23 @@ class Game:
         self.window.set_caption(f"{GAME_TITLE} - {self.clock.get_fps() :.1f}")
 
     def draw(self):
-        self.display.fill("magenta")
+        self.display.fill("white")
+        self.map.draw()
 
     def event_loop(self):
+        # Process key presses
         for event in pg.event.get():
-            # Process key presses
+
+            # Q or ESC quits game
             if event.type == pg.QUIT or (
                 event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE
             ):
                 pg.quit()
                 sys.exit()
+
+            # SPACE generates new layout
+            if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+                self.map = Map(self)
 
 
 if __name__ == "__main__":
