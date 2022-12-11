@@ -7,6 +7,7 @@ import sys
 
 from settings import *
 from map import *
+from player import *
 
 
 class Game:
@@ -18,6 +19,7 @@ class Game:
         self.new_game()
 
     def new_game(self):
+        self.player = Player(self)
         self.map = Map(self)
 
     def game_loop(self):
@@ -33,6 +35,7 @@ class Game:
     def draw(self):
         self.display.fill("white")
         self.map.draw()
+        self.player.draw()
 
     def event_loop(self):
         # Process key presses

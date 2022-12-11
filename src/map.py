@@ -42,6 +42,8 @@ class Map:
         self.map_layout = None
         self.world_map = {}
         self.floor_map = {}
+        self.map_exit_tile = None
+        self.map_exit = None
         self.tileset = Tileset("src/resources/tilemaps/dungeon.png")
         self.randomize()
         self.populate_maps()
@@ -62,34 +64,58 @@ class Map:
             for x, y in self.floor_map:
                 self.game.display.blit(
                     self.tileset.get_tile(self.floor_map[x, y]),
-                    (x * BLOCK_SCALE, y * BLOCK_SCALE),
+                    (x * BLOCK_SCALE, y * BLOCK_SCALE, BLOCK_SCALE, BLOCK_SCALE),
                 )
 
             for x, y in self.world_map:
                 self.game.display.blit(
                     self.tileset.get_tile(self.world_map[x, y]),
-                    (x * BLOCK_SCALE, y * BLOCK_SCALE),
+                    (x * BLOCK_SCALE, y * BLOCK_SCALE, BLOCK_SCALE, BLOCK_SCALE),
                 )
+
+            # Draw exit tile
+            map_exit_tile_x, map_exit_tile_y = self.map_exit_tile
+            self.map_exit = pg.draw.circle(
+                self.game.display,
+                "white",
+                (
+                    map_exit_tile_x * BLOCK_SCALE + BLOCK_SCALE // 2,
+                    map_exit_tile_y * BLOCK_SCALE + BLOCK_SCALE // 2,
+                ),
+                16,
+            )
 
     def randomize(self):
         map_layout_s = generate_32x24_map()
 
         # Convert string format to numbers
-        map_layout_s = (
-            map_layout_s.replace("<", ".")
-            .replace(">", ".")
-            .replace(".", "0")
-            .replace("#", str(randint(1, 1)))
-        )
+        map_layout_s = map_layout_s.replace(".", "0").replace("#", str(randint(1, 1)))
 
         # Create map layout from string
         map_layout = [[] * MAP_COLS] * MAP_ROWS
         for i, row in enumerate(map_layout_s.split("\n")[:-1]):
             map_layout[i] = [*row]
 
+        # Get map exit and player start location
+        self.game.player.starting_tile = find_first_tile(">", map_layout)
+        self.map_exit_tile = find_first_tile("<", map_layout)
+
+        pairs = {"<": "0", ">": "0", ".": "0"}
+        pair_replacer = pairs.get
+        map_layout = [[pair_replacer(n, n) for n in row] for row in map_layout]
+
         self.map_layout = [
             [int(i) if i != " " else i for i in row] for row in map_layout
         ]
+
+
+def find_first_tile(tile, list_of_lists):
+    for i, values in enumerate(list_of_lists):
+        try:
+            j = values.index(tile)
+        except ValueError:
+            continue
+        return j, i
 
 
 if __name__ == "__main__":
