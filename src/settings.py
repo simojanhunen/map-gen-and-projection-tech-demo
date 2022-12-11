@@ -11,3 +11,8 @@ FRAMES_PER_SECOND = 60
 
 # Tilesets
 TILESET_DUNGEON = "./resources/tilemaps/dungeon.png"
+
+# Player
+PLAYER_SPEED = 0.005
+PLAYER_ROTATION_SPEED = 0.004
+PLAYER_SIZE_SCALE = 32

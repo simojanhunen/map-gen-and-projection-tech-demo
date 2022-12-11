@@ -16,11 +16,14 @@ class Game:
         self.window = pg.display
         self.display = self.window.set_mode(DISPLAY_RESOLUTION)
         self.clock = pg.time.Clock()
+        self.dt = 1
         self.new_game()
 
     def new_game(self):
         self.player = Player(self)
         self.map = Map(self)
+
+        self.initialize()
 
     def game_loop(self):
         while True:
@@ -28,8 +31,13 @@ class Game:
             self.update()
             self.draw()
 
+    def initialize(self):
+        self.player.initialize()
+
     def update(self):
+        self.player.update()
         self.window.flip()
+        self.dt = self.clock.tick(FRAMES_PER_SECOND)
         self.window.set_caption(f"{GAME_TITLE} - {self.clock.get_fps() :.1f}")
 
     def draw(self):
@@ -50,7 +58,7 @@ class Game:
 
             # SPACE generates new layout
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-                self.map = Map(self)
+                self.new_game()
 
 
 if __name__ == "__main__":
