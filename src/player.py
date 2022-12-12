@@ -18,6 +18,7 @@ class Player:
         self.x: int = 0
         self.y: int = 0
         self.angle: float = 0
+        self.player_rect: pg.Rect = None
 
     def move(self) -> None:
         sin_a = math.sin(self.angle)
@@ -77,6 +78,12 @@ class Player:
         if not self.initialized:
             self.initialize()
         self.move()
+        self.check_if_exit()
+
+    def check_if_exit(self) -> None:
+        if self.player_rect and self.game.map.map_exit:
+            if self.player_rect.colliderect(self.game.map.map_exit):
+                self.game.new_game()
 
     def draw(self) -> None:
         if self.initialized:
@@ -85,7 +92,7 @@ class Player:
             end_x = BLOCK_SCALE_HALVED * math.cos(self.angle)
             end_y = BLOCK_SCALE_HALVED * math.sin(self.angle)
 
-            self.map_exit = pg.draw.circle(
+            self.player_rect = pg.draw.circle(
                 self.game.display,
                 "green",
                 (
