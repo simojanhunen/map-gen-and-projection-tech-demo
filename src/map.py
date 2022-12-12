@@ -1,22 +1,33 @@
+"""
+Map generation and tileset related functionality
+"""
+
 import pygame as pg
 from random import randint
+from typing import Tuple, Iterable
 
 from settings import *
-from map_generator import generate_32x24_map
+from map_generator import generate_map
 
 
 class Tileset:
-    def __init__(self, file, size=(32, 32), margin=0, spacing=0) -> None:
-        self.file = file
-        self.size = size
-        self.margin = margin
-        self.spacing = spacing
-        self.image = pg.image.load(file)
-        self.rect = self.image.get_rect()
-        self.tiles = []
+    def __init__(
+        self,
+        file: str,
+        size: Tuple[int, int] = (32, 32),
+        margin: int = 0,
+        spacing: int = 0,
+    ) -> None:
+        self.file: str = file
+        self.size: Tuple[int, int] = size
+        self.margin: int = margin
+        self.spacing: int = spacing
+        self.image: pg.Surface = pg.image.load(file)
+        self.rect: pg.Rect = self.image.get_rect()
+        self.tiles: list[pg.Surface] = []
         self.load()
 
-    def load(self):
+    def load(self) -> None:
         self.tiles = []
         x0 = y0 = self.margin
         w, h = self.rect.size
@@ -29,26 +40,26 @@ class Tileset:
                 tile.blit(self.image, (0, 0), (x, y, *self.size))
                 self.tiles.append(tile)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.__class__.__name__} file:{self.file} tile:{self.size}"
 
-    def get_tile(self, index):
+    def get_tile(self, index) -> pg.Surface:
         return self.tiles[index]
 
 
 class Map:
-    def __init__(self, game=None) -> None:
+    def __init__(self, game) -> None:
         self.game = game
-        self.map_layout = None
-        self.world_map = {}
-        self.floor_map = {}
-        self.map_exit_tile = None
-        self.map_exit = None
-        self.tileset = Tileset("src/resources/tilemaps/dungeon.png")
+        self.map_layout: Iterable = None
+        self.world_map: dict = {}
+        self.floor_map: dict = {}
+        self.map_exit_tile: Tuple[int, int] = None
+        self.map_exit: pg.Rect = None
+        self.tileset: Tileset = Tileset("src/resources/tilemaps/dungeon.png")
         self.randomize()
         self.populate_maps()
 
-    def populate_maps(self):
+    def populate_maps(self) -> None:
         for j, row in enumerate(self.map_layout):
             # For value in jth row and ith column add value to position (i, j) if wall else floor
             for i, value in enumerate(row):
@@ -59,7 +70,7 @@ class Map:
                 else:
                     self.floor_map[(i, j)] = value
 
-    def draw(self):
+    def draw(self) -> None:
         if self.game:
             for x, y in self.floor_map:
                 self.game.display.blit(
@@ -79,20 +90,20 @@ class Map:
                 self.game.display,
                 "white",
                 (
-                    map_exit_tile_x * BLOCK_SCALE + BLOCK_SCALE // 2,
-                    map_exit_tile_y * BLOCK_SCALE + BLOCK_SCALE // 2,
+                    map_exit_tile_x * BLOCK_SCALE + BLOCK_SCALE_HALVED,
+                    map_exit_tile_y * BLOCK_SCALE + BLOCK_SCALE_HALVED,
                 ),
                 16,
             )
 
-    def randomize(self):
-        map_layout_s = generate_32x24_map()
+    def randomize(self) -> None:
+        map_layout_s = generate_map(MAP_COLUMNS, MAP_ROWS)
 
         # Convert string format to numbers
         map_layout_s = map_layout_s.replace(".", "0").replace("#", str(randint(1, 1)))
 
         # Create map layout from string
-        map_layout = [[] * MAP_COLS] * MAP_ROWS
+        map_layout = [[] * MAP_COLUMNS] * MAP_ROWS
         for i, row in enumerate(map_layout_s.split("\n")[:-1]):
             map_layout[i] = [*row]
 
@@ -109,14 +120,10 @@ class Map:
         ]
 
 
-def find_first_tile(tile, list_of_lists):
+def find_first_tile(tile, list_of_lists) -> Tuple[int, int]:
     for i, values in enumerate(list_of_lists):
         try:
             j = values.index(tile)
         except ValueError:
             continue
         return j, i
-
-
-if __name__ == "__main__":
-    map = Map()

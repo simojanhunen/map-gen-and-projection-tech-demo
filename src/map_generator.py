@@ -1,8 +1,10 @@
-# Made by alexanderfast at https://github.com/alexanderfast/roguelike-dungeon-generator
+"""
+Dungeon generator and A* search algorithm were made by
+alexanderfast (https://github.com/alexanderfast/roguelike-dungeon-generator)
+"""
 
 import random
 import itertools
-import sys
 
 
 def _AStar(start, goal):
@@ -212,5 +214,11 @@ def generate(cellsX, cellsY, cellSize):
     return end_layout
 
 
-def generate_32x24_map():
-    return generate(4, 3, 8)
+###############################################################################
+
+import math
+
+
+def generate_map(w: int = 32, h: int = 24):
+    gcd = math.gcd(w, h)
+    return generate(w // gcd, h // gcd, gcd)

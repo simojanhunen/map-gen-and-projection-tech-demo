@@ -5,6 +5,8 @@ Game entry point
 import pygame as pg
 import sys
 
+from typing import Type
+
 from settings import *
 from map import *
 from player import *
@@ -16,7 +18,7 @@ class Game:
         self.window = pg.display
         self.display = self.window.set_mode(DISPLAY_RESOLUTION)
         self.clock = pg.time.Clock()
-        self.dt = 1
+        self.dt: int = 1  # deltatime
         self.new_game()
 
     def new_game(self):

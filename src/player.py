@@ -1,5 +1,11 @@
+"""
+Player control, events and drawing
+"""
+
 import pygame as pg
 import math
+
+from typing import Tuple
 
 from settings import *
 
@@ -7,10 +13,11 @@ from settings import *
 class Player:
     def __init__(self, game) -> None:
         self.game = game
-        self.initialized = False
-        self.starting_tile = None
-        self.x, self.y = (0, 0)
-        self.angle = 0
+        self.initialized: bool = False
+        self.starting_tile: Tuple[int, int] = None
+        self.x: int = 0
+        self.y: int = 0
+        self.angle: float = 0
 
     def move(self) -> None:
         sin_a = math.sin(self.angle)
@@ -41,10 +48,10 @@ class Player:
         if keys[pg.K_RIGHT]:
             self.angle += PLAYER_ROTATION_SPEED * self.game.dt
 
-    def check_if_wall(self, x, y):
+    def check_if_wall(self, x: int, y: int) -> bool:
         return (x, y) not in self.game.map.world_map
 
-    def check_collisions(self, dx, dy):
+    def check_collisions(self, dx: float, dy: float) -> None:
         scale = PLAYER_SIZE_SCALE / self.game.dt
         if self.check_if_wall(round(self.x + dx * scale), round(self.y)):
             self.x += dx
@@ -60,8 +67,8 @@ class Player:
         self.x, self.y = self.starting_tile
 
         # FOV angle
-        dy = -((MAP_ROWS // 2) - self.y)
-        dx = (MAP_COLS // 2) - self.x
+        dy = -(MAP_CENTER_ROW - self.y)
+        dx = MAP_CENTER_COLUMN - self.x
         self.angle = -math.atan2(dy, dx)
 
         self.initialized = True
@@ -73,10 +80,10 @@ class Player:
 
     def draw(self) -> None:
         if self.initialized:
-            scaled_x = self.x * BLOCK_SCALE + BLOCK_SCALE // 2
-            scaled_y = self.y * BLOCK_SCALE + BLOCK_SCALE // 2
-            end_x = BLOCK_SCALE // 2 * math.cos(self.angle)
-            end_y = BLOCK_SCALE // 2 * math.sin(self.angle)
+            scaled_x = self.x * BLOCK_SCALE + BLOCK_SCALE_HALVED
+            scaled_y = self.y * BLOCK_SCALE + BLOCK_SCALE_HALVED
+            end_x = BLOCK_SCALE_HALVED * math.cos(self.angle)
+            end_y = BLOCK_SCALE_HALVED * math.sin(self.angle)
 
             self.map_exit = pg.draw.circle(
                 self.game.display,
