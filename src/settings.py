@@ -2,7 +2,8 @@
 Stores all the game settings in one common location
 """
 
-from typing import Final
+from typing import Final, Tuple
+import math
 
 # Window and game display
 GAME_TITLE: Final = "Unnamed raycaster 2D"
@@ -25,9 +26,21 @@ MAP_CENTER_ROW: Final = MAP_ROWS // 2
 MAP_CENTER: Final = MAP_CENTER_COLUMN, MAP_CENTER_ROW
 
 # Tilesets
-TILESET_DUNGEON = "./resources/tilemaps/dungeon.png"
+TILESET_DUNGEON: str = "./resources/tilemaps/dungeon.png"
 
 # Player
-PLAYER_SPEED = 0.004
-PLAYER_ROTATION_SPEED = 0.004
-PLAYER_SIZE_SCALE = 16
+PLAYER_SPEED: float = 0.004
+PLAYER_ROTATION_SPEED: float = 0.004
+PLAYER_SIZE_SCALE: int = 16
+
+# Raycasting
+FOV: Final = math.pi / 3
+HALF_FOV: Final = FOV / 2
+NUMBER_OF_RAYS: Final = DISPLAY_WIDTH // 2
+DELTA_ANGLE: Final = FOV / NUMBER_OF_RAYS
+MAX_DEPTH: Final = 20
+SCREEN_DISTANCE: Final = (DISPLAY_WIDTH // 2) / math.tan(HALF_FOV)
+RAY_TO_DISPLAY_SCALE: Final = DISPLAY_WIDTH // NUMBER_OF_RAYS
+
+# Skybox
+FLOOR_COLOR: Tuple[int, int, int] = (20, 20, 20)

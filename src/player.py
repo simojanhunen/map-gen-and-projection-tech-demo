@@ -115,3 +115,11 @@ class Player:
                 ),
                 2,
             )
+
+    @property
+    def pos(self) -> Tuple[float, float]:
+        return self.x, self.y
+
+    @property
+    def map_pos(self) -> Tuple[int, int]:
+        return int(self.x), int(self.y)
